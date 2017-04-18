@@ -11,12 +11,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_CALL = 1;
+    private static final int REQUEST_CODE_SMS = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +40,9 @@ public class MainActivity extends AppCompatActivity {
             }else {
                 Toast.makeText(this, "No Permission...", Toast.LENGTH_SHORT).show();
             }
-
+        }
+        else if (requestCode == REQUEST_CODE_SMS && grantResults[0]==PackageManager.PERMISSION_GRANTED){
+            sendSMS(null);
         }
     }
 
@@ -69,5 +73,22 @@ public class MainActivity extends AppCompatActivity {
 //        if (callIntent.resolveActivity(getPackageManager()) != null){
 //
 //        }
+    }
+
+    public void sendSMS(@Nullable View v){
+        //<uses-permission android:name="android.permission.SEND_SMS"/>
+        if (ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.SEND_SMS)
+                !=PackageManager.PERMISSION_GRANTED){
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.SEND_SMS}
+                    , REQUEST_CODE_SMS);
+            return;
+        }
+
+
+        SmsManager.getDefault().sendTextMessage(
+                "0507123012", null, "Hello", null, null);
     }
 }
